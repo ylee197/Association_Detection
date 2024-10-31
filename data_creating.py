@@ -31,8 +31,7 @@ def creating_dataset1(data_path:str):
     file_path = 'data/'
     
     path = os.path.join(data_path, file_path)
-    df_tweet = pd.read_csv('/home/ylee197/Covid/FP_gcn/data/input/full_URL_tweet.csv')
-    #df_tweet['hashtags'] = df_tweet.hashtags[2:-2]
+    df_tweet = pd.read_csv(<File Path>)
     l = []
     for index, row in df_tweet.iterrows():
         l_tag = str2list(row.hashtags)
@@ -160,8 +159,7 @@ def creating_dataset1(data_path:str):
         dict_item = pd.Series(trigram['index'].values, index = trigram['id']).to_dict()
     elif label == 'domain':
         dict_item = pd.Series(domain['index'].values, index = domain['id']).to_dict()
-    
-    #domain_id.loc[domain_id.index > 100, 'code'] = -1
+  
     dict_user = pd.Series(user_id['index'].values, index = user_id['users']).to_dict()
     
     ## Graph file
@@ -183,20 +181,6 @@ def creating_dataset1(data_path:str):
     
     ## feature matrix
     df_item = df_tweet[['tweet_id','username','original_user',label]]
-    '''
-    if label == 'text':
-        df_item = df_tweet[['tweet_id','username','original_user','text']]
-    else if label == 'hashtag':
-        df_item = df_tweet[['tweet_id','username','original_user','hashtag']]
-    else if label == 'hash_text':
-        df_item = df_tweet[['tweet_id','username','original_user','hash_text']]
-    else if label == 'bigram':
-        df_item = df_tweet[['tweet_id','username','original_user','bigram']]
-    else if label == 'trigram':
-        df_item = df_tweet[['tweet_id','username','original_user','trigram']]
-    else if label == 'domain':
-        df_item = df_tweet[['tweet_id','username','original_user','domain']]
-    '''
     df_item = df_item.dropna()
     
     l_target = []
@@ -209,7 +193,6 @@ def creating_dataset1(data_path:str):
         item_list = []
         if df_summary.shape[0] > 0:
             item_list = df_summary[label].apply(pd.Series).stack().unique()
-            #item_list = df_summary['text'].apply(pd.Series).stack().unique()
         item = {'id':row['index'], 'users':row['users'], 'item_list': item_list}
         l_target.append(item)
     df_target = pd.DataFrame(l_target)

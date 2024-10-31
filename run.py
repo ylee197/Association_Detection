@@ -9,7 +9,7 @@ import torch
 from torch_geometric.data import NeighborSampler
 
 from data_loading import get_dataset
-from data_creating import creating_dataset1, creating_dataset2, creating_dataset3
+from data_creating import creating_dataset
 from data_utils import set_uniform_train_val_test_split
 from seeds import val_seeds
 from filling_strategies import filling
@@ -41,7 +41,7 @@ parser.add_argument('--gpu_idx', type=int, help='Indexes of gpu to run program o
 def run(args):
     device=torch.device(f'cuda:{args.gpu_idx}' if torch.cuda.is_available() else 'cpu')
     ## Creating dataset
-    n_user, n_domain = creating_dataset1(data_path=args.data_path)
+    n_user, n_domain = creating_dataset(data_path=args.data_path)
   
     ## Data loading
     dataset = get_dataset(n_user, n_domain, data_path=args.data_path, label = 'user')

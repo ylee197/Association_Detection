@@ -14,10 +14,6 @@ def stance_labeling(df):
     df = df.sort_values(by=['count'], ascending = False)
     df = df.reset_index(drop = True)
     
-    ### Stance Pro_vaccine is 1, anti_vaccine is 2  and nutral = 0
-    #df.loc[(df['stance_val'] > 0.25) & (df['stance_val'] < 0.75), 'stance'] = 0
-    #df.loc[df['stance_val'] <= 0.25, 'stance'] = 1
-    #df.loc[df['stance_val'] >= 0.75, 'stance'] = 2
     df.loc[(df['stance_val'] > 0.0) & (df['stance_val'] < 1), 'stance'] = 0
     df.loc[df['stance_val'] <= 0, 'stance'] = 1
     df.loc[df['stance_val'] >= 1, 'stance'] = 2
@@ -39,14 +35,9 @@ def creating_dataset1(data_path:str):
     #df_tweet['hashtags'] = df_tweet.hashtags[2:-2]
     l = []
     for index, row in df_tweet.iterrows():
-        #res = df_tweet.loc[index,'hashtags'].strip('][').split(', ')
-        #l_tag = []
-        #for tag in res:
-        #    l_tag.append(tag[1:-1])
         l_tag = str2list(row.hashtags)
         l_bi = str2list(row.bigrams)
         l_tri = str2list(row.trigrams)
-        #l_host = str2list(row.host)
         
         item = {'tweet_id':row.tweet_id, 'username':row.username, 'original_user':row.original_user, 
                 'clean_text': row.clean_text, 'tweet_stance':row.tweet_stance, 'user_stance':row.user_stance, 
@@ -115,10 +106,6 @@ def creating_dataset1(data_path:str):
     df_hashtag = df_hashtag.reset_index(drop = True)
     
     ### Tweet Hashtag + Text
-    #df_hash_text = df_tweet[['text''tweet_stance']]
-    #df_hash_text['hash_text'] = [','.join(map(str, l)) for l in df_hash_text['hashtags']]
-    #df_hash_text['hash_text'] = df_hash_text['hash_text'].str.replace('#','')
-    #df_hash_text['text'] = df_hash_text['clean_text'].astype(str) +' '+ df_hash_text['hash_text']
     df_hash_text = df_tweet[['text','tweet_stance']]
     df_hash_text = stance_labeling(df_hash_text)
     df_hash_text = df_hash_text.reset_index(drop = False)
@@ -176,13 +163,8 @@ def creating_dataset1(data_path:str):
     
     #domain_id.loc[domain_id.index > 100, 'code'] = -1
     dict_user = pd.Series(user_id['index'].values, index = user_id['users']).to_dict()
-    #dict_user = pd.Series(df_known_user['index'].values, index = df_known_user['users']).to_dict()
-    #df_known_user = df_known_user.head(NUM_data)
-    #df_known_user = df_known_user.fillna(-1)
-    #user_id = user_id.fillna(-1)
-   
+    
     ## Graph file
-    #df_node = df_known_user[['index','users','code']]
     df_node = user_id[['index','users','code']]
     
     df_known_graph = df_tweet[(df_tweet['username'].isin(user_id['users'])) & (df_tweet['original_user'].isin(user_id['users']))]
@@ -234,9 +216,7 @@ def creating_dataset1(data_path:str):
     
     ## Target.csv
     df_target_code = df_node[['index','users','code']]
-    #df_target_code = df_target_code.head(NUM_data)
     df_target_code = df_target_code.fillna(-1)
-    #print(df_target_code)
     df_target_code.to_csv(f'{path}/target.csv', index = False)
     
     ## Features
@@ -283,15 +263,9 @@ def creating_dataset2(data_path:str):
     #df_tweet['hashtags'] = df_tweet.hashtags[2:-2]
     l = []
     for index, row in df_tweet.iterrows():
-        #res = df_tweet.loc[index,'hashtags'].strip('][').split(', ')
-        #l_tag = []
-        #for tag in res:
-        #    l_tag.append(tag[1:-1])
         l_tag = str2list(row.hashtags)
         l_bi = str2list(row.bigrams)
         l_tri = str2list(row.trigrams)
-        #l_host = str2list(row.host)
-        
         item = {'tweet_id':row.tweet_id, 'username':row.username, 'original_user':row.original_user, 
                 'clean_text': row.clean_text, 'tweet_stance':row.tweet_stance, 'user_stance':row.user_stance, 
                 'original_user_stance':row.original_user_stance,'urls':row.urls, 'hashtags':l_tag, 
@@ -314,11 +288,8 @@ def creating_dataset2(data_path:str):
     df_user_id = stance_labeling(df_user_id)
     
     ### Domain ID
-    #df_domain_id = df_tweet[['domain','tweet_stance']]
-    #df_domain_id = stance_labeling(df_domain_id)
     df_domain = df_tweet[['domain']]
     df_domain = df_domain.groupby('domain', as_index = False).size()
-    #df_domain = df_domain.reset_index(drop = False)
     df_domain.columns = ['id','count']
     df_domain = df_domain[df_domain['id'] != '']
     df_domain = df_domain.sort_values(by=['count'], ascending = False)
@@ -359,10 +330,6 @@ def creating_dataset2(data_path:str):
     df_hashtag = df_hashtag.reset_index(drop = True)
     
     ### Tweet Hashtag + Text
-    #df_hash_text = df_tweet[['text''tweet_stance']]
-    #df_hash_text['hash_text'] = [','.join(map(str, l)) for l in df_hash_text['hashtags']]
-    #df_hash_text['hash_text'] = df_hash_text['hash_text'].str.replace('#','')
-    #df_hash_text['text'] = df_hash_text['clean_text'].astype(str) +' '+ df_hash_text['hash_text']
     df_hash_text = df_tweet[['text','tweet_stance']]
     df_hash_text = stance_labeling(df_hash_text)
     df_hash_text = df_hash_text.reset_index(drop = False)
@@ -423,13 +390,8 @@ def creating_dataset2(data_path:str):
     
     #domain_id.loc[domain_id.index > 100, 'code'] = -1
     dict_user = pd.Series(user_id['index'].values, index = user_id['users']).to_dict()
-    #dict_user = pd.Series(df_known_user['index'].values, index = df_known_user['users']).to_dict()
-    #df_known_user = df_known_user.head(NUM_data)
-    #df_known_user = df_known_user.fillna(-1)
-    #user_id = user_id.fillna(-1)
    
     ## Graph file
-    #df_node = df_known_user[['index','users','code']]
     df_node = user_id[['index','users','code']]
     
     df_known_graph = df_tweet[(df_tweet['username'].isin(user_id['users'])) & (df_tweet['original_user'].isin(user_id['users']))]
@@ -448,20 +410,6 @@ def creating_dataset2(data_path:str):
     
     ## feature matrix
     df_item = df_tweet[['tweet_id','username','original_user',label]]
-    '''
-    if label == 'text':
-        df_item = df_tweet[['tweet_id','username','original_user','text']]
-    else if label == 'hashtag':
-        df_item = df_tweet[['tweet_id','username','original_user','hashtag']]
-    else if label == 'hash_text':
-        df_item = df_tweet[['tweet_id','username','original_user','hash_text']]
-    else if label == 'bigram':
-        df_item = df_tweet[['tweet_id','username','original_user','bigram']]
-    else if label == 'trigram':
-        df_item = df_tweet[['tweet_id','username','original_user','trigram']]
-    else if label == 'domain':
-        df_item = df_tweet[['tweet_id','username','original_user','domain']]
-    '''
     df_item = df_item.dropna()
     
     l_target = []
